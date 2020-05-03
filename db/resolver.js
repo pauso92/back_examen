@@ -9,21 +9,14 @@ require('dotenv').config({ path: 'variables.env' });
 
 
 const crearToken = (usuario, secreta, expiresIn) => {
-    console.log(usuario);
+    //console.log(usuario);
     const { id, email, nombre, apellido } = usuario;
-
-
     return jwt.sign({ id }, secreta, { expiresIn })
 }
 
 //Resolvers
 const resolvers = {
     Query: {
-        obtenerUsuario: async (_, { token }) => {
-            const usuarioID = await jwt.verify(token, process.env.SECRETA)
-
-            return usuarioID;
-        },
         obtenerProductos: async () => {
             try {
                 const productos = await Producto.find({});
@@ -31,6 +24,9 @@ const resolvers = {
             } catch (error) {
                 console.log(error)
             }
+        },
+        obtenerUsuario: async (_, {}, ctx ) =>{
+            return ctx.usuario;
         },
         obtenerProducto: async (_, { id }) => {
             //Validando si existe prodicto
@@ -45,15 +41,15 @@ const resolvers = {
                 const clientes = await Cliente.find({});
                 return clientes;
             } catch (error) {
-                console.logn(error);
+                console.log(error);
             }
         },
-        obtenerClientesVendedor: async (_, { }, ctx) => {
+        obtenerClientesVendedor: async (_, { }, ctx ) => {
             try {
                 const clientes = await Cliente.find({ vendedor: ctx.usuario.id.toString() });
                 return clientes;
             } catch (error) {
-                console.logn(error);
+                console.log(error);
             }
         },
         obtenerCliente: async (_, { id }, ctx) => {
